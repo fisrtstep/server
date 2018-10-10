@@ -76,7 +76,6 @@ func QueryAllMaterials ()(resp []orm.Params, error interface{}, count int64){
 }
 
 func QueryMaterialById(mid int) (resp []orm.Params, error interface{}, count int64){
-	beego.Info(mid)
 	o := orm.NewOrm()
 	var result []orm.Params
 	resultCount, queryError := o.Raw("SELECT * FROM material WHERE mid = ?", mid).Values(&result)
@@ -86,5 +85,22 @@ func QueryMaterialById(mid int) (resp []orm.Params, error interface{}, count int
 	}else {
 		beego.Info("Method: QueryMaterialById, Report : Failed to query the Material table -- ", queryError)
 		return nil, queryError, resultCount
+	}
+}
+
+func DeleteMaterialById(mid int) (resp common.ResposneStruct, error interface{}) {
+	o := orm.NewOrm()
+	var response common.ResposneStruct
+	var result []orm.Params
+	_, deleteError := o.Raw("DELETE FROM material WHERE mid = ?", mid).Values(&result)
+	if deleteError == nil {
+		response.Status = 200
+		response.Message = "Record deleted!"
+		return response, nil
+	}else{
+		beego.Info("Method: DeleteMaterialById, Report : Failed to delete record material table -- ", deleteError)
+		response.Status = 400
+		response.Message = "Record deleted!"
+		return response, deleteError
 	}
 }
